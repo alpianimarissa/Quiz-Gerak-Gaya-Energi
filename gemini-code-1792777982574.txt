@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Interaktif Fisika Kelas 8 SMP (40 Soal - Dark Mode)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkbg: '#0f172a',
+                        darkcard: '#1e293b',
+                        darkborder: '#334155',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+    
+    <!-- KaTeX CSS & JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"
+            onload="renderKaTeX()"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+        }
+        .katex {
+            font-size: 1.05em !important;
+        }
+        /* Custom Dark Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between bg-slate-950 text-slate-100">
+
+    <!-- Header Navigation -->
+    <header class="bg-slate-900 text-white sticky top-0 z-50 px-4 py-3 shadow-xl border-b border-slate-800 backdrop-blur-md bg-opacity-90">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-indigo-600 p-2 rounded-xl text-white shadow-lg shadow-indigo-600/30">
+                    <i class="fa-solid fa-atom text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-sm sm:text-base leading-tight text-white">Kuis Fisika Kelas 8 SMP</h1>
+                    <p class="text-xs text-indigo-400">Gerak, Gaya, Gravitasi, Tata Surya & Energi (40 Soal)</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3 text-xs font-semibold">
+                <div class="bg-slate-800/90 px-3 py-1.5 rounded-lg border border-slate-700 text-slate-200">
+                    Progres: <span id="progress-text" class="text-indigo-400 font-bold">0/40</span>
+                </div>
+                <button onclick="resetQuizPrompt()" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 px-3 py-1.5 rounded-lg transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-rotate-right"></i> <span class="hidden sm:inline">Reset</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="max-w-7xl w-full mx-auto px-4 py-6 flex-grow grid grid-cols-1 lg:grid-cols-4 gap-6">
+
+        <!-- Navigasi Kisi-Kisi Nomor Soal (Sidebar) -->
+        <aside class="lg:col-span-1 bg-slate-900 border border-slate-800 shadow-xl rounded-2xl p-5 h-fit lg:sticky lg:top-20 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 class="font-bold text-sm text-slate-200 flex items-center gap-2">
+                    <i class="fa-solid fa-grip text-indigo-400"></i> Navigasi Soal
+                </h3>
+                <span class="text-xs font-semibold text-indigo-400 bg-indigo-950/80 px-2.5 py-1 rounded-md border border-indigo-800" id="score-live-badge">Skor: 0</span>
+            </div>
+
+            <!-- Grid Nomor Soal -->
+            <div id="question-grid" class="grid grid-cols-5 sm:grid-cols-8 lg:grid-cols-5 gap-2 max-h-64 lg:max-h-none overflow-y-auto pr-1">
+                <!-- Generasi Tombol Grid oleh JS -->
+            </div>
+
+            <!-- Legenda Warna -->
+            <div class="pt-3 border-t border-slate-800 text-[11px] grid grid-cols-2 gap-2 text-slate-400">
+                <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-slate-800 border border-slate-700"></span> Belum Ada</div>
+                <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-emerald-600 text-white"></span> Benar</div>
+                <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-rose-600 text-white"></span> Salah</div>
+                <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-indigo-600 ring-2 ring-indigo-400"></span> Aktif</div>
+            </div>
+        </aside>
+
+        <!-- Area Soal Utama -->
+        <section class="lg:col-span-3 bg-slate-900 border border-slate-800 shadow-xl rounded-2xl p-6 flex flex-col justify-between space-y-6">
+            
+            <!-- Soal Container -->
+            <div id="question-card" class="space-y-6">
+                <!-- Header Soal -->
+                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                    <span id="question-badge" class="bg-indigo-950 text-indigo-300 border border-indigo-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                        Soal #1
+                    </span>
+                    <span id="topic-tag" class="text-xs text-slate-300 bg-slate-800 px-2.5 py-1 rounded-md border border-slate-700 font-medium">
+                        Topik
+                    </span>
+                </div>
+
+                <!-- Teks Soal & Gambar/SVG -->
+                <div class="space-y-4">
+                    <h2 id="question-text" class="text-base sm:text-lg font-semibold text-slate-100 leading-relaxed">
+                        Teks soal akan dimuat di sini...
+                    </h2>
+
+                    <!-- Container Grafik / Visual SVG (jika ada) -->
+                    <div id="illustration-container" class="hidden my-4 bg-slate-950 p-4 rounded-xl border border-slate-800 flex flex-col items-center justify-center">
+                        <!-- SVG disuntikkan secara dinamis -->
+                    </div>
+                </div>
+
+                <!-- Opsi Jawaban -->
+                <div id="options-container" class="space-y-3 pt-2">
+                    <!-- Opsi jawaban dimasukkan via JS -->
+                </div>
+
+                <!-- Feedback Instan & Pembahasan -->
+                <div id="feedback-card" class="hidden p-4 rounded-xl border space-y-2 text-xs sm:text-sm animate-fade-in">
+                    <div id="feedback-title" class="font-bold flex items-center gap-2 text-base">
+                        <!-- Status Benar / Salah -->
+                    </div>
+                    <p id="feedback-rationale" class="text-slate-300 leading-relaxed">
+                        <!-- Penjelasan/Pembahasan -->
+                    </p>
+                </div>
+            </div>
+
+            <!-- Navigasi Bawah (Sebelumnya / Selanjutnya) -->
+            <div class="flex items-center justify-between pt-6 border-t border-slate-800">
+                <button id="btn-prev" onclick="navigateQuestion(-1)" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold px-4 py-2.5 rounded-xl text-xs sm:text-sm transition flex items-center gap-2">
+                    <i class="fa-solid fa-arrow-left"></i> Sebelumnya
+                </button>
+
+                <button id="btn-next" onclick="navigateQuestion(1)" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-5 py-2.5 rounded-xl text-xs sm:text-sm transition flex items-center gap-2 shadow-lg shadow-indigo-600/30">
+                    Selanjutnya <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Modal Konfirmasi Reset -->
+    <div id="reset-modal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 shadow-2xl rounded-2xl p-6 max-w-sm w-full space-y-4 text-center">
+            <div class="w-12 h-12 bg-rose-950/80 text-rose-400 rounded-full border border-rose-800 flex items-center justify-center mx-auto text-xl">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-100">Reset Semua Jawaban?</h3>
+            <p class="text-xs text-slate-400 leading-relaxed">
+                Tindakan ini akan menghapus seluruh kemajuan jawaban Anda dan mereset kuis dari awal.
+            </p>
+            <div class="flex gap-3 pt-2">
+                <button onclick="closeResetModal()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 font-semibold py-2 rounded-xl text-xs transition">Batal</button>
+                <button onclick="confirmResetQuiz()" class="flex-1 bg-rose-600 hover:bg-rose-500 text-white font-semibold py-2 rounded-xl text-xs transition shadow-lg shadow-rose-600/30">Ya, Reset</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-slate-950 text-slate-500 text-center text-xs py-4 border-t border-slate-900">
+        <p>Kuis Interaktif Fisika Kelas 8 SMP - 40 Soal Pilihan Ganda | Dark Mode Edition</p>
+    </footer>
+
+    <!-- JavaScript Data & Logic -->
+    <script>
+        // Data Bank 40 Soal Fisika SMP (Sesuai Modul Materi)
+        const quizData = [
+            // BAB 1: GERAK LURUS (1 - 8)
+            {
+                id: 1,
+                topic: "Gerak Lurus",
+                question: "Budi berjalan ke arah timur sejauh $4\\text{ meter}$, kemudian berbelok ke utara sejauh $3\\text{ meter}$. Besar jarak total ($s$) dan perpindahan ($\\Delta x$) Budi adalah...",
+                svg: `<svg viewBox="0 0 200 120" class="w-48 h-28"><line x1="30" y1="90" x2="130" y2="90" stroke="#60a5fa" stroke-width="3"/><line x1="130" y1="90" x2="130" y2="20" stroke="#60a5fa" stroke-width="3"/><line x1="30" y1="90" x2="130" y2="20" stroke="#f87171" stroke-width="2" stroke-dasharray="4 4"/><text x="75" y="108" fill="#94a3b8" font-size="10" font-weight="bold">4 m (Timur)</text><text x="135" y="60" fill="#94a3b8" font-size="10" font-weight="bold">3 m (Utara)</text><text x="55" y="50" fill="#f87171" font-size="10" font-weight="bold">Δx = 5 m</text></svg>`,
+                options: [
+                    { text: "Jarak $7\\text{ m}$ dan Perpindahan $5\\text{ m}$", isCorrect: true },
+                    { text: "Jarak $5\\text{ m}$ dan Perpindahan $7\\text{ m}$", isCorrect: false },
+                    { text: "Jarak $7\\text{ m}$ dan Perpindahan $1\\text{ m}$", isCorrect: false },
+                    { text: "Jarak $12\\text{ m}$ dan Perpindahan $5\\text{ m}$", isCorrect: false }
+                ],
+                rationale: "Jarak adalah total lintasan: $s = 4 + 3 = 7\\text{ m}$. Perpindahan adalah garis lurus dari titik awal ke akhir (Pythagoras): $\\Delta x = \\sqrt{4^2 + 3^2} = 5\\text{ m}$."
+            },
+            {
+                id: 2,
+                topic: "Gerak Lurus",
+                question: "Kereta api melaju di lintasan lurus datar dengan kecepatan konstan $80\\text{ km/jam}$ selama $2\\text{ jam}$. Jarak yang ditempuh kereta api tersebut adalah...",
+                options: [
+                    { text: "$160\\text{ km}$", isCorrect: true },
+                    { text: "$40\\text{ km}$", isCorrect: false },
+                    { text: "$80\\text{ km}$", isCorrect: false },
+                    { text: "$120\\text{ km}$", isCorrect: false }
+                ],
+                rationale: "Kereta mengalami Gerak Lurus Beraturan (GLB) dengan kecepatan konstan. Rumus jarak $s = v \\cdot t = 80\\text{ km/jam} \\times 2\\text{ jam} = 160\\text{ km}$."
+            },
+            {
+                id: 3,
+                topic: "Gerak Lurus",
+                question: "Sebuah mobil bergerak dari kecepatan awal $v_0 = 10\\text{ m/s}$ lalu digas hingga mencapai kecepatan akhir $v_t = 20\\text{ m/s}$ dalam waktu $5\\text{ detik}$. Berapakah percepatan ($a$) mobil tersebut?",
+                options: [
+                    { text: "$2\\text{ m/s}^2$", isCorrect: true },
+                    { text: "$4\\text{ m/s}^2$", isCorrect: false },
+                    { text: "$6\\text{ m/s}^2$", isCorrect: false },
+                    { text: "$10\\text{ m/s}^2$", isCorrect: false }
+                ],
+                rationale: "Percepatan didefinisikan sebagai perubahan kecepatan per satuan waktu: $a = \\frac{v_t - v_0}{t} = \\frac{20 - 10}{5} = \\frac{10}{5} = 2\\text{ m/s}^2$."
+            },
+            {
+                id: 4,
+                topic: "Gerak Lurus",
+                question: "Perhatikan grafik $v-t$ berikut. Berapakah percepatan ($a$) benda dalam selang waktu $t = 0$ hingga $t = 4\\text{ detik}$?",
+                svg: `<svg viewBox="0 0 200 120" class="w-52 h-28"><line x1="30" y1="100" x2="180" y2="100" stroke="#64748b" stroke-width="2"/><line x1="30" y1="100" x2="30" y2="20" stroke="#64748b" stroke-width="2"/><line x1="30" y1="80" x2="150" y2="30" stroke="#3b82f6" stroke-width="3"/><text x="18" y="83" fill="#60a5fa" font-size="9" font-weight="bold">4</text><text x="14" y="33" fill="#60a5fa" font-size="9" font-weight="bold">16</text><text x="150" y="112" fill="#94a3b8" font-size="9">4 s</text><text x="180" y="112" fill="#94a3b8" font-size="9">t</text><text x="10" y="15" fill="#94a3b8" font-size="9">v (m/s)</text></svg>`,
+                options: [
+                    { text: "$3\\text{ m/s}^2$", isCorrect: true },
+                    { text: "$4\\text{ m/s}^2$", isCorrect: false },
+                    { text: "$2\\text{ m/s}^2$", isCorrect: false },
+                    { text: "$12\\text{ m/s}^2$", isCorrect: false }
+                ],
+                rationale: "Kemiringan grafik $v-t$ menunjukkan percepatan: $a = \\frac{v_t - v_0}{t} = \\frac{16 - 4}{4} = \\frac{12}{4} = 3\\text{ m/s}^2$."
+            },
+            {
+                id: 5,
+                topic: "Gerak Lurus",
+                question: "Berdasarkan grafik $v-t$ pada soal nomor 4 di atas, jarak total yang ditempuh benda selama $4\\text{ detik}$ (luas daerah di bawah grafik) adalah...",
+                options: [
+                    { text: "$40\\text{ m}$", isCorrect: true },
+                    { text: "$32\\text{ m}$", isCorrect: false },
+                    { text: "$64\\text{ m}$", isCorrect: false },
+                    { text: "$48\\text{ m}$", isCorrect: false }
+                ],
+                rationale: "Jarak sama dengan luas trapesium di bawah grafik $v-t$: $s = \\frac{v_0 + v_t}{2} \\cdot t = \\frac{4 + 16}{2} \\cdot 4 = 10 \\cdot 4 = 40\\text{ m}$."
+            },
+            {
+                id: 6,
+                topic: "Gerak Lurus",
+                question: "Sebuah kendaraan bergerak dari keadaan diam ($v_0 = 0$) dengan percepatan tetap $2\\text{ m/s}^2$. Kecepatan kendaraan setelah melaju selama $6\\text{ detik}$ adalah...",
+                options: [
+                    { text: "$12\\text{ m/s}$", isCorrect: true },
+                    { text: "$36\\text{ m/s}$", isCorrect: false },
+                    { text: "$8\\text{ m/s}$", isCorrect: false },
+                    { text: "$24\\text{ m/s}$", isCorrect: false }
+                ],
+                rationale: "Menggunakan rumus GLBB dipercepat: $v_t = v_0 + a \\cdot t = 0 + (2 \\times 6) = 12\\text{ m/s}$."
+            },
+            {
+                id: 7,
+                topic: "Gerak Lurus",
+                question: "Sebuah mobil balap mengalami percepatan konstan $4\\text{ m/s}^2$ dari keadaan diam. Jarak tempuh mobil setelah bergerak selama $5\\text{ detik}$ adalah...",
+                options: [
+                    { text: "$50\\text{ m}$", isCorrect: true },
+                    { text: "$100\\text{ m}$", isCorrect: false },
+                    { text: "$20\\text{ m}$", isCorrect: false },
+                    { text: "$80\\text{ m}$", isCorrect: false }
+                ],
+                rationale: "Rumus jarak GLBB tanpa kecepatan awal ($v_0=0$): $s = \\frac{1}{2} a t^2 = \\frac{1}{2} \\times 4 \\times (5)^2 = 2 \\times 25 = 50\\text{ m}$."
+            },
+            {
+                id: 8,
+                topic: "Gerak Lurus",
+                question: "Seseorang melempar bola vertikal ke atas dengan kecepatan awal $30\\text{ m/s}$. Jika percepatan gravitasi $g = 10\\text{ m/s}^2$, waktu yang dibutuhkan bola hingga mencapai titik tertinggi adalah...",
+                options: [
+                    { text: "$3\\text{ detik}$", isCorrect: true },
+                    { text: "$6\\text{ detik}$", isCorrect: false },
+                    { text: "$4.5\\text{ detik}$", isCorrect: false },
+                    { text: "$9\\text{ detik}$", isCorrect: false }
+                ],
+                rationale: "Di titik tertinggi, kecepatan akhir $v_t = 0$. Pada gerak vertikal ke atas (GLBB diperlambat): $v_t = v_0 - g \\cdot t \\implies 0 = 30 - 10t \\implies t = 3\\text{ detik}$."
+            },
+
+            // BAB 2: GAYA & HUKUM NEWTON (9 - 16)
+            {
+                id: 9,
+                topic: "Gaya & Hukum Newton",
+                question: "Perhatikan fenomena ketika penumpang bus terdorong ke depan secara mendadak saat sopir menginjak rem. Kejadian ini merupakan contoh penerapan dari...",
+                options: [
+                    { text: "Hukum I Newton (Kelembaman / Inersia)", isCorrect: true },
+                    { text: "Hukum II Newton", isCorrect: false },
+                    { text: "Hukum III Newton", isCorrect: false },
+                    { text: "Hukum Gravitasi Universal", isCorrect: false }
+                ],
+                rationale: "Hukum I Newton menyatakan bahwa setiap benda cenderung mempertahankan keadaan geraknya (kelembaman). Saat bus direm, tubuh penumpang berusaha mempertahankan kecepatan awalnya."
+            },
+            {
+                id: 10,
+                topic: "Gaya & Hukum Newton",
+                question: "Dua buah gaya bekerja pada kotak bermassa $6\\text{ kg}$: $F_1 = 45\\text{ N}$ ke kanan dan $F_2 = 15\\text{ N}$ ke kiri. Percepatan yang dialami kotak tersebut adalah...",
+                svg: `<svg viewBox="0 0 200 100" class="w-48 h-24"><rect x="10" y="80" width="180" height="8" fill="#334155"/><rect x="75" y="40" width="50" height="40" fill="#3b82f6" rx="4"/><line x1="75" y1="60" x2="25" y2="60" stroke="#f59e0b" stroke-width="3"/><line x1="125" y1="60" x2="185" y2="60" stroke="#10b981" stroke-width="3"/><text x="135" y="52" fill="#10b981" font-size="9" font-weight="bold">F1 = 45N</text><text x="25" y="52" fill="#f59e0b" font-size="9" font-weight="bold">F2 = 15N</text><text x="100" y="64" fill="#ffffff" font-size="10" font-weight="bold" text-anchor="middle">6 kg</text></svg>`,
+                options: [
+                    { text: "$5\\text{ m/s}^2$", isCorrect: true },
+                    { text: "$10\\text{ m/s}^2$", isCorrect: false },
+                    { text: "$7.5\\text{ m/s}^2$", isCorrect: false },
+                    { text: "$2.5\\text{ m/s}^2$", isCorrect: false }
+                ],
+                rationale: "Resultan gaya $\\sum F = F_1 - F_2 = 45 - 15 = 30\\text{ N}$. Menurut Hukum II Newton: $a = \\frac{\\sum F}{m} = \\frac{30}{6} = 5\\text{ m/s}^2$."
+            },
+            {
+                id: 11,
+                topic: "Gaya & Hukum Newton",
+                question: "Saat seseorang mendayung perahu, dayung mendorong air ke belakang ($F_{\\text{aksi}}$) dan air mendorong perahu bergerak ke depan ($F_{\\text{reaksi}}$). Hal ini sesuai dengan...",
+                options: [
+                    { text: "Hukum III Newton", isCorrect: true },
+                    { text: "Hukum I Newton", isCorrect: false },
+                    { text: "Hukum II Newton", isCorrect: false },
+                    { text: "Hukum Ohm", isCorrect: false }
+                ],
+                rationale: "Hukum III Newton menyatakan $F_{\\text{aksi}} = -F_{\\text{reaksi}}$, di mana gaya aksi dan reaksi besarnya sama, berlawanan arah, dan bekerja pada dua benda berbeda."
+            },
+            {
+                id: 12,
+                topic: "Gaya & Hukum Newton",
+                question: "Sebuah balok ditarik gaya $F = 20\\text{ N}$ di atas lantai kasar dan mengalami gaya gesek kinetis $8\\text{ N}$. Jika massa balok $4\\text{ kg}$, percepatan balok tersebut adalah...",
+                options: [
+                    { text: "$3\\text{ m/s}^2$", isCorrect: true },
+                    { text: "$5\\text{ m/s}^2$", isCorrect: false },
+                    { text: "$2\\text{ m/s}^2$", isCorrect: false },
+                    { text: "$7\\text{ m/s}^2$", isCorrect: false }
+                ],
+                rationale: "Resultan gaya bersih $\\sum F = F - f_k = 20 - 8 = 12\\text{ N}$. Percepatan $a = \\frac{\\sum F}{m} = \\frac{12}{4} = 3\\text{ m/s}^2$."
+            },
+            {
+                id: 13,
+                topic: "Gaya & Hukum Newton",
+                question: "Gaya kontak yang bekerja pada bidang sentuh antara dua permukaan benda dan arahnya tegak lurus ($90^\\circ$) terhadap bidang tumpu dinamakan...",
+                svg: `<svg viewBox="0 0 160 110" class="w-40 h-24"><rect x="20" y="85" width="120" height="8" fill="#334155"/><rect x="60" y="45" width="40" height="40" fill="#3b82f6"/><line x1="80" y1="45" x2="80" y2="10" stroke="#38bdf8" stroke-width="2"/><line x1="80" y1="65" x2="80" y2="100" stroke="#f87171" stroke-width="2"/><text x="88" y="20" fill="#38bdf8" font-size="10" font-weight="bold">N</text><text x="88" y="100" fill="#f87171" font-size="10" font-weight="bold">W</text></svg>`,
+                options: [
+                    { text: "Gaya Normal ($N$)", isCorrect: true },
+                    { text: "Gaya Berat ($W$)", isCorrect: false },
+                    { text: "Gaya Gesek ($f$)", isCorrect: false },
+                    { text: "Gaya Tegangan Tali ($T$)", isCorrect: false }
+                ],
+                rationale: "Gaya Normal ($N$) adalah gaya penyangga bidang sentuh yang selalu tegak lurus terhadap bidang tumpu."
+            },
+            {
+                id: 14,
+                topic: "Gaya & Hukum Newton",
+                question: "Sebuah pegas dengan konstanta $k = 200\\text{ N/m}$ ditarik hingga bertambah panjang sebesar $0.05\\text{ m}$. Besar gaya pemulih pegas berdasarkan Hukum Hooke adalah...",
+                options: [
+                    { text: "$10\\text{ N}$", isCorrect: true },
+                    { text: "$1000\\text{ N}$", isCorrect: false },
+                    { text: "$40\\text{ N}$", isCorrect: false },
+                    { text: "$1\\text{ N}$", isCorrect: false }
+                ],
+                rationale: "Berdasarkan Hukum Hooke: $F = k \\cdot \\Delta x = 200\\text{ N/m} \\times 0.05\\text{ m} = 10\\text{ N}$."
+            },
+            {
+                id: 15,
+                topic: "Gaya & Hukum Newton",
+                question: "Syarat utama sepasang gaya dikatakan sebagai pasangan Gaya Aksi-Reaksi menurut Hukum III Newton adalah...",
+                options: [
+                    { text: "Sama besar, berlawanan arah, dan bekerja pada dua benda yang berbeda", isCorrect: true },
+                    { text: "Sama besar, searah, dan bekerja pada benda yang sama", isCorrect: false },
+                    { text: "Berbeda besar, berlawanan arah, dan bekerja pada benda yang sama", isCorrect: false },
+                    { text: "Sama besar, berlawanan arah, dan saling menghilangkan", isCorrect: false }
+                ],
+                rationale: "Gaya aksi-reaksi selalu bekerja pada dua benda yang berbeda, sehingga tidak pernah saling meniadakan atau menghasilkan resultan nol pada satu benda."
+            },
+            {
+                id: 16,
+                topic: "Gaya & Hukum Newton",
+                question: "Massa roket beserta bahan bakarnya adalah $2000\\text{ kg}$. Jika mesin roket menghasilkan gaya dorong $30000\\text{ N}$ ke atas dan $g = 10\\text{ m/s}^2$, percepatan awal roket adalah...",
+                options: [
+                    { text: "$5\\text{ m/s}^2$", isCorrect: true },
+                    { text: "$15\\text{ m/s}^2$", isCorrect: false },
+                    { text: "$10\\text{ m/s}^2$", isCorrect: false },
+                    { text: "$20\\text{ m/s}^2$", isCorrect: false }
+                ],
+                rationale: "Berat roket $W = m \\cdot g = 2000 \\times 10 = 20000\\text{ N}$. Gaya bersih $\\sum F = F_{\\text{dorong}} - W = 30000 - 20000 = 10000\\text{ N}$. Percepatan $a = \\frac{10000}{2000} = 5\\text{ m/s}^2$."
+            },
+
+            // BAB 3: GRAVITASI, MASSA & BERAT (17 - 24)
+            {
+                id: 17,
+                topic: "Gravitasi & Berat",
+                question: "Suatu benda memiliki massa $m = 10\\text{ kg}$. Jika percepatan gravitasi Bumi $g = 9.8\\text{ m/s}^2$, berapa berat ($W$) benda tersebut di Bumi?",
+                options: [
+                    { text: "$98\\text{ N}$", isCorrect: true },
+                    { text: "$10\\text{ N}$", isCorrect: false },
+                    { text: "$0.98\\text{ N}$", isCorrect: false },
+                    { text: "$9.8\\text{ N}$", isCorrect: false }
+                ],
+                rationale: "Gaya berat dihitung dengan rumus $W = m \\cdot g = 10\\text{ kg} \\times 9.8\\text{ m/s}^2 = 98\\text{ N}$."
+            },
+            {
+                id: 18,
+                topic: "Gravitasi & Berat",
+                question: "Sebuah benda bermassa $12\\text{ kg}$ dibawa dari Bumi ($g = 10\\text{ m/s}^2$) ke Bulan ($g_{\\text{bulan}} = 1.6\\text{ m/s}^2$). Berapakah massa dan berat benda tersebut di Bulan?",
+                options: [
+                    { text: "Massa $12\\text{ kg}$ dan Berat $19.2\\text{ N}$", isCorrect: true },
+                    { text: "Massa $1.92\\text{ kg}$ dan Berat $120\\text{ N}$", isCorrect: false },
+                    { text: "Massa $12\\text{ kg}$ dan Berat $120\\text{ N}$", isCorrect: false },
+                    { text: "Massa $2\\text{ kg}$ dan Berat $19.2\\text{ N}$", isCorrect: false }
+                ],
+                rationale: "Massa benda selalu tetap di mana saja ($12\\text{ kg}$). Sedangkan berat berubah tergantung gravitasi lokal: $W = m \\cdot g_{\\text{bulan}} = 12 \\times 1.6 = 19.2\\text{ N}$."
+            },
+            {
+                id: 19,
+                topic: "Gravitasi & Berat",
+                question: "Berdasarkan Hukum Gravitasi Universal Newton ($F = G \\frac{m_1 m_2}{r^2}$), jika jarak antara dua benda dijadikan $2$ kali semula, maka gaya gravitasi antar kedua benda menjadi...",
+                options: [
+                    { text: "$\\frac{1}{4}$ kali semula", isCorrect: true },
+                    { text: "$\\frac{1}{2}$ kali semula", isCorrect: false },
+                    { text: "$2$ kali semula", isCorrect: false },
+                    { text: "$4$ kali semula", isCorrect: false }
+                ],
+                rationale: "Gaya gravitasi berbanding terbalik dengan kuadrat jarak ($F \\propto \\frac{1}{r^2}$). Jika jarak menjadi $2r$, maka $F' = \\frac{1}{2^2} F = \\frac{1}{4} F$."
+            },
+            {
+                id: 20,
+                topic: "Gravitasi & Berat",
+                question: "Alat ukur yang digunakan untuk mengukur berat benda berdasarkan prinsip regangan pegas adalah...",
+                options: [
+                    { text: "Dinamometer (Neraca Pegas)", isCorrect: true },
+                    { text: "Neraca Ohaus (Sama Lengan)", isCorrect: false },
+                    { text: "Barometer", isCorrect: false },
+                    { text: "Jangka Sorong", isCorrect: false }
+                ],
+                rationale: "Berat (gaya) diukur menggunakan Dinamometer/Neraca Pegas. Sedangkan massa diukur menggunakan Neraca Sama Lengan atau Neraca Ohaus."
+            },
+            {
+                id: 21,
+                topic: "Gravitasi & Berat",
+                question: "Mengapa astronot di Stasiun Luar Angkasa Internasional (ISS) tampak melayang-layang tanpa berat?",
+                options: [
+                    { text: "Astronot dan ISS berada dalam keadaan jatuh bebas (free-fall) secara terus-menerus mengorbit Bumi", isCorrect: true },
+                    { text: "Di ruang angkasa sama sekali tidak ada gaya gravitasi", isCorrect: false },
+                    { text: "Massa astronot berubah menjadi nol saat di luar atmosfer", isCorrect: false },
+                    { text: "Udara di luar angkasa mendorong astronot ke atas", isCorrect: false }
+                ],
+                rationale: "Gravitasi di ISS masih ada (sekitar $90\\%$ dari gravitasi permukaan Bumi), tetapi astronot mengalami sensasi tak berbobot karena berada dalam kondisi jatuh bebas bersama ISS."
+            },
+            {
+                id: 22,
+                topic: "Gravitasi & Berat",
+                question: "Sebuah benda memiliki berat $500\\text{ N}$ di Bumi. Jika benda dibawa ke planet X yang massanya sama dengan Bumi tetapi jari-jarinya $2$ kali jari-jari Bumi, berat benda di planet X menjadi...",
+                options: [
+                    { text: "$125\\text{ N}$", isCorrect: true },
+                    { text: "$250\\text{ N}$", isCorrect: false },
+                    { text: "$1000\\text{ N}$", isCorrect: false },
+                    { text: "$2000\\text{ N}$", isCorrect: false }
+                ],
+                rationale: "Percepatan gravitasi $g = G \\frac{M}{R^2}$. Jika $R' = 2R$, maka $g' = \\frac{1}{4} g$. Sehingga beratnya menjadi $W' = \\frac{1}{4} \\times 500 = 125\\text{ N}$."
+            },
+            {
+                id: 23,
+                topic: "Gravitasi & Berat",
+                question: "Percepatan gravitasi di permukaan suatu planet ($g = G \\frac{M}{R^2}$) berbanding lurus dengan...",
+                options: [
+                    { text: "Massa planet dan berbanding terbalik dengan kuadrat jari-jari planet", isCorrect: true },
+                    { text: "Jari-jari planet dan berbanding terbalik dengan massa planet", isCorrect: false },
+                    { text: "Massa benda yang diuji di atas planet tersebut", isCorrect: false },
+                    { text: "Kuadrat massa planet", isCorrect: false }
+                ],
+                rationale: "Sesuai formula $g = G \\frac{M}{R^2}$, percepatan gravitasi planet sebanding dengan massa planet ($M$) dan berbanding terbalik dengan kuadrat jari-jarinya ($R^2$)."
+            },
+            {
+                id: 24,
+                topic: "Gravitasi & Berat",
+                question: "Jika Bumi menarik seorang siswa bermassa $50\\text{ kg}$ dengan gaya gravitasi $500\\text{ N}$, berapa besar gaya gravitasi yang dikerjakan siswa tersebut terhadap Bumi?",
+                options: [
+                    { text: "$500\\text{ N}$", isCorrect: true },
+                    { text: "$0\\text{ N}$ karena massa Bumi sangat besar", isCorrect: false },
+                    { text: "$10\\text{ N}$", isCorrect: false },
+                    { text: "$25000\\text{ N}$", isCorrect: false }
+                ],
+                rationale: "Sesuai Hukum III Newton dan Gravitasi Universal, gaya tarik Bumi ke siswa dan gaya tarik siswa ke Bumi besarnya persis sama ($500\\text{ N}$)."
+            },
+
+            // BAB 4: TATA SURYA & PASANG SURUT (25 - 32)
+            {
+                id: 25,
+                topic: "Tata Surya",
+                question: "Hukum II Kepler menyatakan bahwa lintasan planet mengelilingi Matahari menyapu luas daerah yang sama dalam selang waktu yang sama. Hal ini mengakibatkan...",
+                svg: `<svg viewBox="0 0 200 100" class="w-48 h-24"><ellipse cx="100" cy="50" rx="80" ry="35" fill="none" stroke="#64748b" stroke-width="2"/><circle cx="60" cy="50" r="10" fill="#f59e0b"/><polygon points="60,50 140,20 175,40" fill="#38bdf8" opacity="0.3"/><circle cx="140" cy="20" r="4" fill="#38bdf8"/><circle cx="175" cy="40" r="4" fill="#38bdf8"/><text x="50" y="72" fill="#f59e0b" font-size="8" font-weight="bold">Matahari</text></svg>`,
+                options: [
+                    { text: "Planet bergerak lebih cepat saat berada dekat Matahari (Perihelion)", isCorrect: true },
+                    { text: "Planet bergerak dengan kecepatan konstan di seluruh lintasan", isCorrect: false },
+                    { text: "Planet bergerak lebih lambat saat dekat Matahari", isCorrect: false },
+                    { text: "Orbit planet berubah menjadi lingkaran sempurna", isCorrect: false }
+                ],
+                rationale: "Agar luas sapuan sama dalam waktu yang sama, planet harus bergerak paling cepat di titik Perihelion (terdekat Matahari) dan paling lambat di Aphelion (terjauh)."
+            },
+            {
+                id: 26,
+                topic: "Tata Surya",
+                question: "Fenomena Pasang Purnama (Spring Tide) yang menghasilkan pasang air laut tertinggi terjadi ketika Bulan berada pada fase...",
+                options: [
+                    { text: "Bulan Baru (Konjungsi) dan Bulan Purnama (Oposisi)", isCorrect: true },
+                    { text: "Bulan Paruh Kuartal Pertama dan Ketiga", isCorrect: false },
+                    { text: "Hanya saat terjadi Gerhana Matahari Total", isCorrect: false },
+                    { text: "Bulan Sabit Muda", isCorrect: false }
+                ],
+                rationale: "Pasang Purnama terjadi ketika Matahari, Bumi, dan Bulan sejajar dalam satu garis lurus (fase Bulan Baru dan Bulan Purnama), sehingga gaya gravitasi gabungannya maksimal."
+            },
+            {
+                id: 27,
+                topic: "Tata Surya",
+                question: "Pasang Perbani (Neap Tide) menghasilkan permukaan air laut pasang yang paling rendah. Kondisi ini terjadi karena posisi Bulan dan Matahari terhadap Bumi membentuk sudut...",
+                options: [
+                    { text: "$90^\\circ$ (Tegak Lurus / Siku-siku)", isCorrect: true },
+                    { text: "$180^\\circ$ (Sejajar dalam garis lurus)", isCorrect: false },
+                    { text: "$45^\\circ$ (Sudut Lancip)", isCorrect: false },
+                    { text: "$0^\\circ$ (Tindih)", isCorrect: false }
+                ],
+                rationale: "Saat fase kuartal pertama dan ketiga, posisi Bulan membentuk sudut $90^\\circ$ terhadap garis Bumi-Matahari, sehingga gaya gravitasi Bulan dan Matahari saling memperlemah."
+            },
+            {
+                id: 28,
+                topic: "Tata Surya",
+                question: "Dua faktor utama yang membuat planet-planet tetap bertahan pada lintasan orbitnya mengelilingi Matahari tanpa jatuh adalah...",
+                options: [
+                    { text: "Inersia Gerak Planet dan Gaya Tarik Gravitasi Matahari", isCorrect: true },
+                    { text: "Gaya Magnet Matahari dan Gesekan Ruang Angkasa", isCorrect: false },
+                    { text: "Tekanan Radiasi Matahari dan Atmosfer Planet", isCorrect: false },
+                    { text: "Rotasi Planet dan Angin Surya", isCorrect: false }
+                ],
+                rationale: "Keseimbangan orbit terjadi akibat perpaduan inersia planet (kecenderungannya untuk bergerak lurus) dan gaya gravitasi Matahari yang menariknya ke pusat."
+            },
+            {
+                id: 29,
+                topic: "Tata Surya",
+                question: "Kelompok planet yang tergolong sebagai Planet Dalam (Terestrial / berpermukaan batuan padat) dalam sistem Tata Surya kita adalah...",
+                options: [
+                    { text: "Merkurius, Venus, Bumi, dan Mars", isCorrect: true },
+                    { text: "Jupiter, Saturnus, Uranus, dan Neptunus", isCorrect: false },
+                    { text: "Bumi, Mars, Jupiter, dan Saturnus", isCorrect: false },
+                    { text: "Merkurius, Venus, Jupiter, dan Neptunus", isCorrect: false }
+                ],
+                rationale: "Planet Dalam terletak di dalam Sabuk Asteroid dan memiliki permukaan batuan padat: Merkurius, Venus, Bumi, dan Mars."
+            },
+            {
+                id: 30,
+                topic: "Tata Surya",
+                question: "Penyebab utama terjadinya pergantian empat musim di wilayah iklim sedang Bumi adalah...",
+                options: [
+                    { text: "Kemiringan sumbu rotasi Bumi $23.5^\\circ$ saat mengelilingi Matahari (Revolusi)", isCorrect: true },
+                    { text: "Rotasi Bumi pada porosnya selama 24 jam", isCorrect: false },
+                    { text: "Perubahan jarak Bumi-Matahari akibat orbit elips", isCorrect: false },
+                    { text: "Pasang surut air laut yang berulang", isCorrect: false }
+                ],
+                rationale: "Pergantian musim disebabkan oleh kemiringan sumbu Bumi sebesar $23.5^\\circ$ terhadap bidang ekliptika saat Bumi berevolusi mengelilingi Matahari."
+            },
+            {
+                id: 31,
+                topic: "Tata Surya",
+                question: "Benda langit kecil yang terdiri dari es, debu, dan batuan yang membentuk 'ekor' bercahaya menjauhi Matahari saat mendekati Matahari disebut...",
+                options: [
+                    { text: "Komet", isCorrect: true },
+                    { text: "Asteroid", isCorrect: false },
+                    { text: "Meteoroid", isCorrect: false },
+                    { text: "Satelit", isCorrect: false }
+                ],
+                rationale: "Komet terdiri dari es dan debu. Saat mendekati Matahari, radiasi angin surya menguapkan es sehingga membentuk ekor gas yang selalu menjauhi Matahari."
+            },
+            {
+                id: 32,
+                topic: "Tata Surya",
+                question: "Hukum I Kepler menjelaskan tentang bentuk lintasan orbit planet-planet dalam mengelilingi Matahari, yaitu berbentuk...",
+                options: [
+                    { text: "Elips dengan Matahari berada pada salah satu titik fokusnya", isCorrect: true },
+                    { text: "Lingkaran sempurna dengan Matahari tepat di titik pusat", isCorrect: false },
+                    { text: "Parabola tak terhingga", isCorrect: false },
+                    { text: "Garis lurus bolak-balik", isCorrect: false }
+                ],
+                rationale: "Hukum I Kepler menyatakan bahwa semua planet bergerak dalam orbit elips dengan Matahari berada di salah satu titik fokus elips tersebut."
+            },
+
+            // BAB 5: ENERGI & KEKEKALAN ENERGI (33 - 40)
+            {
+                id: 33,
+                topic: "Energi & Perubahannya",
+                question: "Buah mangga bermassa $0.5\\text{ kg}$ menggantung di pohon pada ketinggian $4\\text{ meter}$ di atas tanah. Jika $g = 10\\text{ m/s}^2$, Energi Potensial Gravitasi ($E_p$) mangga tersebut adalah...",
+                options: [
+                    { text: "$20\\text{ Joule}$", isCorrect: true },
+                    { text: "$200\\text{ Joule}$", isCorrect: false },
+                    { text: "$8\\text{ Joule}$", isCorrect: false },
+                    { text: "$2\\text{ Joule}$", isCorrect: false }
+                ],
+                rationale: "Energi Potensial Gravitasi $E_p = m \\cdot g \\cdot h = 0.5\\text{ kg} \\times 10\\text{ m/s}^2 \\times 4\\text{ m} = 20\\text{ Joule}$."
+            },
+            {
+                id: 34,
+                topic: "Energi & Perubahannya",
+                question: "Sebuah benda bermassa $2\\text{ kg}$ bergerak lurus dengan kelajuan $6\\text{ m/s}$. Energi Kinetik ($E_k$) yang dimiliki benda tersebut adalah...",
+                options: [
+                    { text: "$36\\text{ Joule}$", isCorrect: true },
+                    { text: "$12\\text{ Joule}$", isCorrect: false },
+                    { text: "$72\\text{ Joule}$", isCorrect: false },
+                    { text: "$18\\text{ Joule}$", isCorrect: false }
+                ],
+                rationale: "Energi Kinetik $E_k = \\frac{1}{2} m \\cdot v^2 = \\frac{1}{2} \\times 2 \\times (6)^2 = 36\\text{ Joule}$."
+            },
+            {
+                id: 35,
+                topic: "Energi & Perubahannya",
+                question: "Perhatikan lintasan meluncur bebas tanpa gesekan berikut. Di posisi manakah Energi Kinetik ($E_k$) bola mencapai nilai MAKSIMUM?",
+                svg: `<svg viewBox="0 0 200 100" class="w-48 h-24"><path d="M 20,20 Q 100,110 180,40" fill="none" stroke="#64748b" stroke-width="3"/><circle cx="20" cy="20" r="6" fill="#f59e0b"/><circle cx="100" cy="65" r="6" fill="#10b981"/><circle cx="180" cy="40" r="6" fill="#38bdf8"/><text x="15" y="12" fill="#f59e0b" font-size="9" font-weight="bold">A</text><text x="98" y="80" fill="#10b981" font-size="9" font-weight="bold">B</text><text x="180" y="30" fill="#38bdf8" font-size="9" font-weight="bold">C</text></svg>`,
+                options: [
+                    { text: "Posisi B (Titik Terendah)", isCorrect: true },
+                    { text: "Posisi A (Titik Tertinggi)", isCorrect: false },
+                    { text: "Posisi C", isCorrect: false },
+                    { text: "Sama besar di semua posisi", isCorrect: false }
+                ],
+                rationale: "Di titik terendah (B), tinggi $h=0$ sehingga Energi Potensial minimal ($0$) dan seluruh energi berubah menjadi Energi Kinetik maksimum ($E_k$ puncak)."
+            },
+            {
+                id: 36,
+                topic: "Energi & Perubahannya",
+                question: "Bunyi Hukum Kekekalan Energi Mekanik ($E_m = E_p + E_k$) pada sistem terisolasi tanpa gesekan adalah...",
+                options: [
+                    { text: "Jumlah Energi Potensial dan Energi Kinetik selalu bernilai konstan/tetap", isCorrect: true },
+                    { text: "Energi Potensial selalu sama dengan Energi Kinetik di setiap titik", isCorrect: false },
+                    { text: "Energi Mekanik berkurang seiring berjalannya waktu", isCorrect: false },
+                    { text: "Energi Kinetik dapat dimusnahkan secara alami", isCorrect: false }
+                ],
+                rationale: "Hukum Kekekalan Energi Mekanik menyatakan bahwa energi tidak dapat diciptakan atau dimusnahkan, total $E_m = E_p + E_k$ selalu konstan."
+            },
+            {
+                id: 37,
+                topic: "Energi & Perubahannya",
+                question: "Sebuah buah kelapa bermassa $1\\text{ kg}$ jatuh bebas dari ketinggian $5\\text{ m}$ ($g = 10\\text{ m/s}^2$). Kelajuan kelapa saat tepat menyentuh tanah adalah...",
+                options: [
+                    { text: "$10\\text{ m/s}$", isCorrect: true },
+                    { text: "$50\\text{ m/s}$", isCorrect: false },
+                    { text: "$5\\text{ m/s}$", isCorrect: false },
+                    { text: "$100\\text{ m/s}$", isCorrect: false }
+                ],
+                rationale: "Dengan Kekekalan Energi Mekanik ($E_{p1} = E_{k2}$): $m \\cdot g \\cdot h = \\frac{1}{2} m \\cdot v^2 \\implies 10 \\times 5 = \\frac{1}{2} v^2 \\implies v^2 = 100 \\implies v = 10\\text{ m/s}$."
+            },
+            {
+                id: 38,
+                topic: "Energi & Perubahannya",
+                question: "Saat kita mengerem sepeda hingga berhenti, energi kinetik roda terasa 'hilang'. Fenomena disipasi energi ini sebenarnya mengubah energi kinetik menjadi...",
+                options: [
+                    { text: "Energi Kalor (Panas) dan Energi Bunyi", isCorrect: true },
+                    { text: "Energi Kimia dan Listrik", isCorrect: false },
+                    { text: "Energi Potensial Gravitasi", isCorrect: false },
+                    { text: "Energi Nuklir", isCorrect: false }
+                ],
+                rationale: "Gaya gesek rem merubah energi mekanik/kinetik menjadi bentuk energi terdisipasi (panas pada kempit rem/ban dan bunyi gesekan)."
+            },
+            {
+                id: 39,
+                topic: "Energi & Perubahannya",
+                question: "Anak panah bermassa $0.1\\text{ kg}$ dilepaskan dari busur dengan Energi Kinetik $80\\text{ Joule}$. Kecepatan meluncur anak panah tersebut adalah...",
+                options: [
+                    { text: "$40\\text{ m/s}$", isCorrect: true },
+                    { text: "$20\\text{ m/s}$", isCorrect: false },
+                    { text: "$800\\text{ m/s}$", isCorrect: false },
+                    { text: "$16\\text{ m/s}$", isCorrect: false }
+                ],
+                rationale: "$E_k = \\frac{1}{2} m \\cdot v^2 \\implies 80 = \\frac{1}{2} (0.1) v^2 \\implies 80 = 0.05 v^2 \\implies v^2 = 1600 \\implies v = 40\\text{ m/s}$."
+            },
+            {
+                id: 40,
+                topic: "Energi & Perubahannya",
+                question: "Urutan perubahan bentuk energi yang terjadi pada Pembangkit Listrik Tenaga Air (PLTA) adalah...",
+                options: [
+                    { text: "Energi Potensial Air $\\rightarrow$ Energi Kinetik Turbin $\\rightarrow$ Energi Listrik Generator", isCorrect: true },
+                    { text: "Energi Kimia $\\rightarrow$ Energi Panas $\\rightarrow$ Energi Listrik", isCorrect: false },
+                    { text: "Energi Listrik $\\rightarrow$ Energi Kinetik $\\rightarrow$ Energi Potensial", isCorrect: false },
+                    { text: "Energi Nuklir $\\rightarrow$ Energi Kalor $\\rightarrow$ Energi Listrik", isCorrect: false }
+                ],
+                rationale: "Air waduk (Energi Potensial) mengalir memutar turbin (Energi Kinetik), lalu generator mengonversinya menjadi Energi Listrik."
+            }
+        ];
+
+        // Aplikasi State
+        let currentIdx = 0;
+        let userAnswers = {}; // Map: questionId -> chosenOptionIndex
+
+        const STORAGE_KEY = "quiz_fisika_smp8_dark_answers_v2";
+
+        // Inisialisasi
+        window.addEventListener("DOMContentLoaded", () => {
+            loadSavedAnswers();
+            renderGrid();
+            displayQuestion(currentIdx);
+        });
+
+        // Simpan & Muat LocalStorage
+        function loadSavedAnswers() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    userAnswers = JSON.parse(saved);
+                }
+            } catch (e) {
+                console.error("Gagal membaca storage", e);
+            }
+        }
+
+        function saveAnswer(qId, optIdx) {
+            userAnswers[qId] = optIdx;
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(userAnswers));
+            } catch (e) {
+                console.error("Gagal menyimpan jawaban", e);
+            }
+            updateProgress();
+            renderGrid();
+        }
+
+        function updateProgress() {
+            const answeredCount = Object.keys(userAnswers).length;
+            document.getElementById("progress-text").innerText = `${answeredCount}/${quizData.length}`;
+            
+            // Hitung Skor
+            let score = 0;
+            quizData.forEach(q => {
+                const chosen = userAnswers[q.id];
+                if (chosen !== undefined && q.options[chosen].isCorrect) {
+                    score += 2.5; // 40 soal * 2.5 = 100
+                }
+            });
+            document.getElementById("score-live-badge").innerText = `Skor Estimasi: ${score.toFixed(1)}`;
+        }
+
+        // Render Grid Navigasi Soal
+        function renderGrid() {
+            const gridEl = document.getElementById("question-grid");
+            gridEl.innerHTML = "";
+
+            quizData.forEach((q, idx) => {
+                const chosen = userAnswers[q.id];
+                const btn = document.createElement("button");
+                btn.className = "w-full aspect-square rounded-lg font-bold text-xs flex items-center justify-center transition border ";
+
+                if (idx === currentIdx) {
+                    btn.classList.add("ring-2", "ring-indigo-400", "border-indigo-500");
+                }
+
+                if (chosen !== undefined) {
+                    const isCorrect = q.options[chosen].isCorrect;
+                    if (isCorrect) {
+                        btn.classList.add("bg-emerald-600", "text-white", "border-emerald-500");
+                    } else {
+                        btn.classList.add("bg-rose-600", "text-white", "border-rose-500");
+                    }
+                } else {
+                    btn.classList.add("bg-slate-800", "text-slate-300", "border-slate-700", "hover:bg-slate-700");
+                }
+
+                btn.innerText = idx + 1;
+                btn.onclick = () => {
+                    currentIdx = idx;
+                    displayQuestion(currentIdx);
+                    renderGrid();
+                };
+
+                gridEl.appendChild(btn);
+            });
+
+            updateProgress();
+        }
+
+        // Tampilkan Soal Aktif
+        function displayQuestion(idx) {
+            const q = quizData[idx];
+
+            document.getElementById("question-badge").innerText = `Soal #${idx + 1} dari 40`;
+            document.getElementById("topic-tag").innerText = q.topic;
+            document.getElementById("question-text").innerHTML = q.question;
+
+            // Render SVG Ilustrasi jika ada
+            const svgContainer = document.getElementById("illustration-container");
+            if (q.svg) {
+                svgContainer.innerHTML = q.svg;
+                svgContainer.classList.remove("hidden");
+            } else {
+                svgContainer.classList.add("hidden");
+                svgContainer.innerHTML = "";
+            }
+
+            // Opsi
+            const optionsContainer = document.getElementById("options-container");
+            optionsContainer.innerHTML = "";
+
+            const chosenOptIdx = userAnswers[q.id];
+            const hasAnswered = chosenOptIdx !== undefined;
+
+            q.options.forEach((opt, optIdx) => {
+                const optBtn = document.createElement("button");
+                optBtn.className = "w-full text-left p-3.5 rounded-xl border text-xs sm:text-sm transition flex items-start gap-3 relative ";
+
+                const labelPrefix = String.fromCharCode(65 + optIdx); // A, B, C, D
+
+                if (!hasAnswered) {
+                    optBtn.classList.add("bg-slate-800/80", "border-slate-700", "text-slate-200", "hover:bg-indigo-950/60", "hover:border-indigo-500");
+                    optBtn.onclick = () => selectOption(q.id, optIdx);
+                } else {
+                    optBtn.disabled = true;
+                    if (optIdx === chosenOptIdx) {
+                        if (opt.isCorrect) {
+                            optBtn.classList.add("bg-emerald-950/80", "border-emerald-500", "text-emerald-200", "ring-1", "ring-emerald-500");
+                        } else {
+                            optBtn.classList.add("bg-rose-950/80", "border-rose-500", "text-rose-200", "ring-1", "ring-rose-500");
+                        }
+                    } else if (opt.isCorrect) {
+                        // Tunjukkan jawaban yang benar jika pengguna salah pilih
+                        optBtn.classList.add("bg-emerald-950/50", "border-emerald-600/70", "text-emerald-300");
+                    } else {
+                        optBtn.classList.add("bg-slate-900", "border-slate-800", "text-slate-500", "opacity-60");
+                    }
+                }
+
+                optBtn.innerHTML = `
+                    <span class="font-bold bg-slate-700/80 w-6 h-6 rounded-md flex items-center justify-center text-xs shrink-0 text-slate-200">${labelPrefix}</span>
+                    <span class="pt-0.5 leading-relaxed font-medium">${opt.text}</span>
+                `;
+
+                optionsContainer.appendChild(optBtn);
+            });
+
+            // Feedback Card
+            const feedbackCard = document.getElementById("feedback-card");
+            const feedbackTitle = document.getElementById("feedback-title");
+            const feedbackRationale = document.getElementById("feedback-rationale");
+
+            if (hasAnswered) {
+                const isCorrect = q.options[chosenOptIdx].isCorrect;
+                feedbackCard.classList.remove("hidden", "bg-emerald-950/80", "border-emerald-700", "bg-rose-950/80", "border-rose-700");
+
+                if (isCorrect) {
+                    feedbackCard.classList.add("bg-emerald-950/80", "border-emerald-700");
+                    feedbackTitle.className = "font-bold flex items-center gap-2 text-sm sm:text-base text-emerald-400";
+                    feedbackTitle.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i> Jawaban Anda Benar!`;
+                } else {
+                    feedbackCard.classList.add("bg-rose-950/80", "border-rose-700");
+                    feedbackTitle.className = "font-bold flex items-center gap-2 text-sm sm:text-base text-rose-400";
+                    feedbackTitle.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-400"></i> Jawaban Kurang Tepat`;
+                }
+
+                feedbackRationale.innerHTML = `<strong>Pembahasan:</strong> ${q.rationale}`;
+            } else {
+                feedbackCard.classList.add("hidden");
+            }
+
+            // Tombol Navigasi State
+            document.getElementById("btn-prev").disabled = idx === 0;
+            document.getElementById("btn-prev").style.opacity = idx === 0 ? "0.4" : "1";
+
+            document.getElementById("btn-next").disabled = idx === quizData.length - 1;
+            document.getElementById("btn-next").style.opacity = idx === quizData.length - 1 ? "0.4" : "1";
+
+            renderKaTeX();
+        }
+
+        // Aksi Pilih Opsi Jawaban
+        function selectOption(qId, optIdx) {
+            saveAnswer(qId, optIdx);
+            displayQuestion(currentIdx);
+        }
+
+        // Navigasi Maju/Mundur Soal
+        function navigateQuestion(direction) {
+            const newIdx = currentIdx + direction;
+            if (newIdx >= 0 && newIdx < quizData.length) {
+                currentIdx = newIdx;
+                displayQuestion(currentIdx);
+                renderGrid();
+            }
+        }
+
+        // Modal Reset
+        function resetQuizPrompt() {
+            document.getElementById("reset-modal").classList.remove("hidden");
+        }
+
+        function closeResetModal() {
+            document.getElementById("reset-modal").classList.add("hidden");
+        }
+
+        function confirmResetQuiz() {
+            localStorage.removeItem(STORAGE_KEY);
+            userAnswers = {};
+            currentIdx = 0;
+            closeResetModal();
+            renderGrid();
+            displayQuestion(currentIdx);
+        }
+
+        // Render Formula Math dengan KaTeX
+        function renderKaTeX() {
+            if (window.renderMathInElement) {
+                renderMathInElement(document.body, {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '$', right: '$', display: false}
+                    ],
+                    throwOnError: false
+                });
+            }
+        }
+    </script>
+</body>
+</html>
+```eof
+
+I have generated the single-file HTML document for the **Grade 8 Physics Interactive Quiz (Dark Mode)**. 
+
+### Key Features Included:
+1. **Dark Mode UI Aesthetics:** Built with a dark slate palette (`#0f172a` / `#1e293b`), styled with Tailwind CSS, Font Awesome icons, and KaTeX mathematical formula rendering.
+2. **Complete 40-Question Bank:** Covers all 5 main modules (Motion, Forces & Newton's Laws, Gravity & Mass/Weight, Solar System & Kepler's Laws, and Energy & Conservation).
+3. **Interactive Navigation & State Persistence:** Features direct grid navigation, auto-saving to `localStorage`, live score tracking, and instant step-by-step explanations for each question.
