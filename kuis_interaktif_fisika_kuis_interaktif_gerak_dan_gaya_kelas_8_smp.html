@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Interaktif - Gerak dan Gaya Kelas 8 SMP (30 Soal)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Header / Navbar -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-indigo-600 p-2.5 rounded-xl text-white shadow-md shadow-indigo-200">
+                    <i class="fa-solid fa-graduation-cap text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight text-slate-900">Kuis Fisika Kelas 8 SMP</h1>
+                    <p class="text-xs text-slate-500 font-medium">Materi: Gerak dan Gaya (30 Soal)</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-3">
+                <div class="hidden sm:flex flex-col items-end mr-2">
+                    <span class="text-xs text-slate-500 font-medium">Skor Saat Ini</span>
+                    <span id="score-display" class="font-bold text-emerald-600 text-base">0 / 100</span>
+                </div>
+                <button id="reset-btn" onclick="confirmReset()" class="bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-rotate-right"></i> Reset Kuis
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Container Utama -->
+    <div class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full grid grid-cols-1 lg:grid-cols-4 gap-6">
+
+        <!-- Sidebar / Drawer Navigasi Soal -->
+        <aside class="lg:col-span-1 bg-white border border-slate-200 rounded-2xl p-4 flex flex-col h-fit sticky top-20 shadow-sm">
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="font-semibold text-sm text-slate-700 flex items-center gap-2">
+                    <i class="fa-solid fa-list-ol text-indigo-600"></i> Navigasi Soal
+                </h2>
+                <span id="progress-text" class="text-xs font-medium bg-slate-100 border border-slate-200 px-2.5 py-0.5 rounded-full text-slate-600">0/30 Terjawab</span>
+            </div>
+
+            <!-- Ringkasan Status -->
+            <div class="grid grid-cols-3 gap-2 text-center text-xs mb-4">
+                <div class="bg-emerald-50 border border-emerald-200 rounded-xl py-1.5 text-emerald-700">
+                    <div id="stat-correct" class="font-bold text-sm">0</div>
+                    <div class="text-[10px] text-emerald-600 font-medium">Benar</div>
+                </div>
+                <div class="bg-rose-50 border border-rose-200 rounded-xl py-1.5 text-rose-700">
+                    <div id="stat-wrong" class="font-bold text-sm">0</div>
+                    <div class="text-[10px] text-rose-600 font-medium">Salah</div>
+                </div>
+                <div class="bg-slate-50 border border-slate-200 rounded-xl py-1.5 text-slate-700">
+                    <div id="stat-empty" class="font-bold text-sm">30</div>
+                    <div class="text-[10px] text-slate-500 font-medium">Belum</div>
+                </div>
+            </div>
+
+            <!-- Grid Tombol Soal -->
+            <div id="question-grid" class="grid grid-cols-5 gap-2 max-h-[350px] overflow-y-auto pr-1">
+                <!-- Diisi via JS -->
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-slate-100 text-[11px] text-slate-500 flex flex-col gap-1.5 font-medium">
+                <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> Jawaban Benar</div>
+                <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span> Jawaban Salah</div>
+                <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-indigo-600 inline-block"></span> Soal Aktif</div>
+            </div>
+        </aside>
+
+        <!-- Area Konten Soal -->
+        <main class="lg:col-span-3 flex flex-col gap-4">
+            
+            <!-- Card Soal -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-7 shadow-sm flex-1 flex flex-col justify-between">
+                <div>
+                    <!-- Header Soal -->
+                    <div class="flex justify-between items-center mb-5 pb-3 border-b border-slate-100">
+                        <span id="question-number" class="bg-indigo-50 text-indigo-700 border border-indigo-200 px-3.5 py-1 rounded-full text-xs font-bold">
+                            Soal No. 1 dari 30
+                        </span>
+                        <span id="question-topic" class="text-xs text-slate-500 font-semibold bg-slate-100 px-3 py-1 rounded-md">
+                            Topik: Gerak Lurus
+                        </span>
+                    </div>
+
+                    <!-- Teks Soal -->
+                    <div id="question-text" class="text-slate-800 font-semibold text-base sm:text-lg mb-5 leading-relaxed">
+                        Loading soal...
+                    </div>
+
+                    <!-- Tempat Ilustrasi / Gambar SVG -->
+                    <div id="illustration-container" class="mb-6 flex justify-center bg-slate-50 p-4 rounded-xl border border-slate-200 min-h-[120px] items-center">
+                        <!-- SVG diisi dari JS jika ada -->
+                    </div>
+
+                    <!-- Pilihan Jawaban -->
+                    <div id="options-container" class="space-y-3 mb-6">
+                        <!-- Diisi via JS -->
+                    </div>
+
+                    <!-- Box Umpan Balik / Pembahasan -->
+                    <div id="feedback-box" class="hidden p-4 rounded-xl border mb-4 transition-all shadow-sm">
+                        <div id="feedback-status" class="font-bold text-sm mb-1 flex items-center gap-2"></div>
+                        <div id="feedback-explanation" class="text-xs sm:text-sm text-slate-700 leading-relaxed"></div>
+                    </div>
+                </div>
+
+                <!-- Tombol Navigasi Bawah -->
+                <div class="flex justify-between items-center pt-5 border-t border-slate-100 mt-2">
+                    <button id="prev-btn" onclick="changeQuestion(-1)" class="bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 px-4 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 transition disabled:opacity-40 disabled:cursor-not-allowed">
+                        <i class="fa-solid fa-arrow-left"></i> Sebelumnya
+                    </button>
+                    
+                    <button id="next-btn" onclick="changeQuestion(1)" class="bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-100 px-5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 transition">
+                        Berikutnya <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Modal Reset -->
+    <div id="reset-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 max-w-sm w-full text-center shadow-2xl">
+            <div class="w-12 h-12 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                <i class="fa-solid fa-triangle-exclamation text-xl"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-900 mb-2">Reset Semua Jawaban?</h3>
+            <p class="text-xs text-slate-500 mb-6 leading-relaxed">Tindakan ini akan menghapus seluruh data progres kuis dan jawaban yang tersimpan di memori perangkat ini.</p>
+            <div class="flex gap-3">
+                <button onclick="closeResetModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 py-2.5 rounded-xl text-xs font-semibold transition">Batal</button>
+                <button onclick="executeReset()" class="flex-1 bg-rose-600 hover:bg-rose-700 text-white py-2.5 rounded-xl text-xs font-semibold shadow-md shadow-rose-100 transition">Ya, Reset</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Kuis -->
+    <script>
+        // Key lokal penyimpanan
+        const STORAGE_KEY = 'quiz_gerak_gaya_smp_v2';
+
+        // Bank Soal 30 Soal Gerak & Gaya Kelas 8 SMP
+        // Kunci Jawaban Seimbang: A: 8, B: 7, C: 8, D: 7
+        const questionsData = [
+            {
+                id: 1,
+                topic: "Gerak Lurus Beraturan (GLB)",
+                question: "Sebuah sepeda bergerak dengan kecepatan tetap 5 m/s selama 20 detik. Berapakah jarak total yang ditempuh sepeda tersebut?",
+                illustration: `<svg width="280" height="90" viewBox="0 0 280 90"><line x1="20" y1="70" x2="260" y2="70" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4"/><circle cx="60" cy="55" r="12" fill="none" stroke="#4f46e5" stroke-width="3"/><circle cx="100" cy="55" r="12" fill="none" stroke="#4f46e5" stroke-width="3"/><path d="M 60 55 L 80 40 L 100 55 M 80 40 L 80 30 M 75 30 L 85 30" stroke="#4f46e5" stroke-width="3" fill="none"/><path d="M 110 45 L 160 45" stroke="#0284c7" stroke-width="3" marker-end="url(#arr1)"/><text x="115" y="35" fill="#0284c7" font-size="12" font-weight="bold">v = 5 m/s</text><defs><marker id="arr1" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#0284c7"/></marker></defs></svg>`,
+                options: [
+                    "4 meter",
+                    "100 meter",
+                    "25 meter",
+                    "150 meter"
+                ],
+                answer: 1, // B
+                explanation: "Sesuai rumus GLB: Jarak (s) = Kecepatan (v) × Waktu (t) = 5 m/s × 20 s = 100 meter."
+            },
+            {
+                id: 2,
+                topic: "Gerak Lurus Berubah Beraturan (GLBB)",
+                question: "Mobil mainan awalnya diam, lalu dipercepat konstan 2 m/s² selama 4 detik. Berapakah kecepatan akhir mobil mainan tersebut?",
+                illustration: `<svg width="280" height="80" viewBox="0 0 280 80"><line x1="20" y1="60" x2="260" y2="60" stroke="#94a3b8" stroke-width="2"/><rect x="40" y="35" width="50" height="25" rx="5" fill="#db2777"/><circle cx="52" cy="60" r="5" fill="#334155"/><circle cx="78" cy="60" r="5" fill="#334155"/><path d="M 100 45 L 150 45" stroke="#e11d48" stroke-width="3" marker-end="url(#arr2)"/><text x="105" y="35" fill="#e11d48" font-size="11" font-weight="bold">a = 2 m/s²</text><defs><marker id="arr2" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#e11d48"/></marker></defs></svg>`,
+                options: [
+                    "8 m/s",
+                    "6 m/s",
+                    "2 m/s",
+                    "10 m/s"
+                ],
+                answer: 0, // A
+                explanation: "Menggunakan rumus GLBB: vt = v0 + (a × t) = 0 + (2 m/s² × 4 s) = 8 m/s."
+            },
+            {
+                id: 3,
+                topic: "Hukum II Newton",
+                question: "Sebuah meja bermassa 10 kg didorong dengan gaya sebesar 30 N di atas lantai licin. Hitung percepatan gerak meja!",
+                illustration: `<svg width="240" height="90" viewBox="0 0 240 90"><line x1="10" y1="70" x2="220" y2="70" stroke="#94a3b8" stroke-width="2"/><rect x="50" y="30" width="60" height="40" rx="4" fill="#059669"/><text x="65" y="55" fill="#fff" font-weight="bold" font-size="13">10 kg</text><path d="M 110 50 L 170 50" stroke="#059669" stroke-width="4" marker-end="url(#arr3)"/><text x="175" y="55" fill="#059669" font-weight="bold" font-size="13">F = 30 N</text><defs><marker id="arr3" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#059669"/></marker></defs></svg>`,
+                options: [
+                    "300 m/s²",
+                    "20 m/s²",
+                    "3 m/s²",
+                    "0,3 m/s²"
+                ],
+                answer: 2, // C
+                explanation: "Sesuai Hukum II Newton: a = F / m = 30 N / 10 kg = 3 m/s²."
+            },
+            {
+                id: 4,
+                topic: "Gaya Berat",
+                question: "Sebuah benda memiliki massa 5 kg. Jika percepatan gravitasi bumi g = 10 m/s², berapakah berat benda tersebut?",
+                illustration: `<svg width="200" height="100" viewBox="0 0 200 100"><rect x="70" y="20" width="60" height="40" fill="#d97706" rx="4"/><text x="88" y="45" fill="#fff" font-weight="bold" font-size="12">5 kg</text><path d="M 100 60 L 100 90" stroke="#dc2626" stroke-width="3" marker-end="url(#arrW)"/><text x="110" y="85" fill="#dc2626" font-weight="bold" font-size="12">W = ?</text><defs><marker id="arrW" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#dc2626"/></marker></defs></svg>`,
+                options: [
+                    "50 Newton",
+                    "2 Newton",
+                    "15 Newton",
+                    "0,5 Newton"
+                ],
+                answer: 0, // A
+                explanation: "Rumus gaya berat: W = m × g = 5 kg × 10 m/s² = 50 Newton."
+            },
+            {
+                id: 5,
+                topic: "Resultan Gaya Searah",
+                question: "Dua orang anak, Edo dan Budi, bersama-sama mendorong gerobak ke arah kanan. Edo memberi gaya 40 N dan Budi memberi gaya 60 N. Resultan gaya totalnya adalah...",
+                illustration: `<svg width="260" height="80" viewBox="0 0 260 80"><rect x="110" y="20" width="60" height="45" fill="#64748b" rx="4"/><path d="M 20 35 L 100 35" stroke="#0284c7" stroke-width="3" marker-end="url(#a1)"/><path d="M 20 55 L 100 55" stroke="#4f46e5" stroke-width="3" marker-end="url(#a2)"/><text x="25" y="30" fill="#0284c7" font-size="10" font-weight="bold">F1 = 40N</text><text x="25" y="50" fill="#4f46e5" font-size="10" font-weight="bold">F2 = 60N</text><defs><marker id="a1" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#0284c7"/></marker><marker id="a2" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#4f46e5"/></marker></defs></svg>`,
+                options: [
+                    "20 N ke kiri",
+                    "100 N ke kanan",
+                    "20 N ke kanan",
+                    "2400 N ke kanan"
+                ],
+                answer: 1, // B
+                explanation: "Gaya yang searah dijumlahkan: R = F1 + F2 = 40 N + 60 N = 100 N ke kanan."
+            },
+            {
+                id: 6,
+                topic: "Resultan Gaya Berlawanan Arah",
+                question: "Roni menarik tali ke kanan dengan gaya 70 N, sedangkan Sisi menarik tali ke kiri dengan gaya 50 N. Besar dan arah resultan gayanya adalah...",
+                illustration: null,
+                options: [
+                    "120 N ke kanan",
+                    "20 N ke kiri",
+                    "20 N ke kanan",
+                    "120 N ke kiri"
+                ],
+                answer: 2, // C
+                explanation: "Gaya berlawanan arah dikurangi: R = 70 N (kanan) - 50 N (kiri) = 20 N ke arah kanan."
+            },
+            {
+                id: 7,
+                topic: "Jarak vs Perpindahan",
+                question: "Rina berjalan 6 meter ke timur, kemudian berbelok dan berjalan 8 meter ke utara. Jarak total yang ditempuh Rina adalah...",
+                illustration: `<svg width="200" height="90" viewBox="0 0 200 90"><path d="M 30 70 L 110 70 L 110 20" fill="none" stroke="#64748b" stroke-width="2" stroke-dasharray="3"/><text x="65" y="85" fill="#475569" font-size="11" font-weight="bold">6 m</text><text x="118" y="50" fill="#475569" font-size="11" font-weight="bold">8 m</text></svg>`,
+                options: [
+                    "14 meter",
+                    "10 meter",
+                    "2 meter",
+                    "48 meter"
+                ],
+                answer: 0, // A
+                explanation: "Jarak adalah panjang lintasan total: Jarak = 6 m + 8 m = 14 meter."
+            },
+            {
+                id: 8,
+                topic: "Besar Perpindahan",
+                question: "Berdasarkan soal nomor 7 (Rina berjalan 6 meter ke timur lalu 8 meter ke utara), berapakah BESAR PERPINDAHAN Rina dari titik awal?",
+                illustration: `<svg width="200" height="90" viewBox="0 0 200 90"><path d="M 30 70 L 110 70 L 110 20" fill="none" stroke="#94a3b8" stroke-width="2" stroke-dasharray="3"/><line x1="30" y1="70" x2="110" y2="20" stroke="#db2777" stroke-width="2"/><text x="45" y="38" fill="#db2777" font-size="10" font-weight="bold">Perpindahan = ?</text></svg>`,
+                options: [
+                    "14 meter",
+                    "2 meter",
+                    "10 meter",
+                    "100 meter"
+                ],
+                answer: 2, // C
+                explanation: "Perpindahan dihitung menggunakan teorema Pythagoras: √(6² + 8²) = √(36 + 64) = √100 = 10 meter."
+            },
+            {
+                id: 9,
+                topic: "Hukum I Newton",
+                question: "Saat bus yang sedang melaju kencang tiba-tiba direm mendadak, para penumpang akan terdorong ke depan. Peristiwa ini merupakan penerapan dari...",
+                illustration: null,
+                options: [
+                    "Hukum II Newton",
+                    "Hukum III Newton",
+                    "Hukum I Newton (Sifat Kelembaman)",
+                    "Hukum Gravitasi"
+                ],
+                answer: 2, // C
+                explanation: "Hukum I Newton menyatakan bahwa benda cenderung mempertahankan keadaan geraknya (kelembaman/inersia)."
+            },
+            {
+                id: 10,
+                topic: "Hukum III Newton",
+                question: "Saat seseorang mendayung perahu, ia mendorong air ke belakang (aksi), sehingga perahu bergerak ke depan (reaksi). Hal ini sesuai dengan...",
+                illustration: null,
+                options: [
+                    "Hukum I Newton",
+                    "Hukum II Newton",
+                    "Hukum III Newton",
+                    "Hukum Ohm"
+                ],
+                answer: 2, // C
+                explanation: "Hukum III Newton (Gaya Aksi-Reaksi): Gaya aksi dan reaksi sama besar namun berlawanan arah."
+            },
+            {
+                id: 11,
+                topic: "Menentukan Kecepatan (GLB)",
+                question: "Seseorang berlari menempuh jarak 180 meter dalam waktu 30 detik. Berapakah kelajuan rata-rata pelari tersebut?",
+                illustration: null,
+                options: [
+                    "6 m/s",
+                    "5.400 m/s",
+                    "150 m/s",
+                    "12 m/s"
+                ],
+                answer: 0, // A
+                explanation: "Rumus kecepatan/kelajuan: v = s / t = 180 meter / 30 detik = 6 m/s."
+            },
+            {
+                id: 12,
+                topic: "Membaca Grafik v-t",
+                question: "Pada grafik kecepatan terhadap waktu (v-t) di bawah ini, berapakah jarak yang ditempuh benda dari detik ke-0 hingga detik ke-4?",
+                illustration: `<svg width="220" height="100" viewBox="0 0 220 100"><line x1="30" y1="80" x2="190" y2="80" stroke="#64748b" stroke-width="2"/><line x1="30" y1="80" x2="30" y2="20" stroke="#64748b" stroke-width="2"/><polygon points="30,80 30,40 150,40 150,80" fill="#6366f1" fill-opacity="0.2"/><line x1="30" y1="40" x2="150" y2="40" stroke="#4f46e5" stroke-width="3"/><text x="15" y="45" fill="#4f46e5" font-size="10" font-weight="bold">v=10</text><text x="145" y="92" fill="#475569" font-size="10" font-weight="bold">t=4</text></svg>`,
+                options: [
+                    "2.5 meter",
+                    "14 meter",
+                    "40 meter",
+                    "20 meter"
+                ],
+                answer: 2, // C
+                explanation: "Jarak pada grafik v-t adalah luas daerah di bawah kurva (Persegi panjang): s = v × t = 10 m/s × 4 s = 40 meter."
+            },
+            {
+                id: 13,
+                topic: "Konversi Satuan Kecepatan",
+                question: "Kecepatan mobil di jalan tol adalah 72 km/jam. Nilai kecepatan ini jika diubah ke dalam satuan m/s adalah...",
+                illustration: null,
+                options: [
+                    "72 m/s",
+                    "20 m/s",
+                    "36 m/s",
+                    "10 m/s"
+                ],
+                answer: 1, // B
+                explanation: "72 km/jam = (72 × 1.000 m) / 3.600 s = 72.000 / 3.600 = 20 m/s."
+            },
+            {
+                id: 14,
+                topic: "Menentukan Massa dari Hukum II Newton",
+                question: "Suatu gaya sebesar 20 N mampu membuat sebuah benda bergerak dengan percepatan 4 m/s². Berapakah massa benda tersebut?",
+                illustration: null,
+                options: [
+                    "80 kg",
+                    "16 kg",
+                    "5 kg",
+                    "0.2 kg"
+                ],
+                answer: 2, // C
+                explanation: "Menggunakan Hukum II Newton: m = F / a = 20 N / 4 m/s² = 5 kg."
+            },
+            {
+                id: 15,
+                topic: "Gerak Jatuh Bebas",
+                question: "Buah mangga jatuh bebas dari pohonnya. Jika percepatan gravitasi bumi 10 m/s², berapa kecepatan mangga setelah jatuh selama 2 detik?",
+                illustration: `<svg width="180" height="100" viewBox="0 0 180 100"><circle cx="90" cy="20" r="10" fill="#65a30d"/><path d="M 90 35 L 90 85" stroke="#0284c7" stroke-width="2" stroke-dasharray="4" marker-end="url(#aDown)"/><text x="105" y="60" fill="#0284c7" font-size="11" font-weight="bold">t = 2 s</text><defs><marker id="aDown" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#0284c7"/></marker></defs></svg>`,
+                options: [
+                    "5 m/s",
+                    "12 m/s",
+                    "20 m/s",
+                    "40 m/s"
+                ],
+                answer: 2, // C
+                explanation: "Gerak Jatuh Bebas (v0 = 0): vt = g × t = 10 m/s² × 2 s = 20 m/s."
+            },
+            {
+                id: 16,
+                topic: "GLBB Pengereman (Perlambatan)",
+                question: "Sebuah sepeda bergerak dengan kecepatan awal 12 m/s kemudian direm hingga berhenti dalam waktu 4 detik. Besar perlambatannya adalah...",
+                illustration: null,
+                options: [
+                    "3 m/s²",
+                    "48 m/s²",
+                    "8 m/s²",
+                    "16 m/s²"
+                ],
+                answer: 0, // A
+                explanation: "Perlambatan (a) = (vt - v0) / t = (0 - 12) / 4 = -3 m/s². Jadi besar perlambatannya adalah 3 m/s²."
+            },
+            {
+                id: 17,
+                topic: "Pengertian Gaya",
+                question: "Di bawah ini yang BUKAN merupakan pengaruh gaya terhadap suatu benda adalah...",
+                illustration: null,
+                options: [
+                    "Benda diam menjadi bergerak",
+                    "Benda bergerak menjadi diam",
+                    "Bentuk dan ukuran benda berubah",
+                    "Massa benda menjadi makin bertambah"
+                ],
+                answer: 3, // D
+                explanation: "Gaya dapat mengubah bentuk, arah, dan kecepatan benda, namun gaya TIDAK dapat menambah massa suatu benda."
+            },
+            {
+                id: 18,
+                topic: "Gaya Sentuh dan Tak Sentuh",
+                question: "Kelompok gaya berikut yang semuanya termasuk jenis GAYA TAK SENTUH adalah...",
+                illustration: null,
+                options: [
+                    "Gaya otot dan gaya gesek",
+                    "Gaya gravitasi, gaya magnet, dan gaya listrik",
+                    "Gaya pegas dan gaya otot",
+                    "Gaya gesek dan gaya magnet"
+                ],
+                answer: 1, // B
+                explanation: "Gaya tak sentuh tidak membutuhkan sentuhan fisik langsung untuk bekerja (contoh: gaya gravitasi, gaya magnet, dan gaya listrik)."
+            },
+            {
+                id: 19,
+                topic: "Massa vs Berat",
+                question: "Pernyataan berikut yang BENAR mengenai perbedaan antara massa dan berat adalah...",
+                illustration: null,
+                options: [
+                    "Massa nilainya tetap di mana saja, sedangkan berat berubah tergantung gravitasi",
+                    "Massa memiliki satuan Newton, berat memiliki satuan Kilogram",
+                    "Massa berubah-ubah sesuai tempat, sedangkan berat selalu konstan",
+                    "Massa dipengaruhi gravitasi, sedangkan berat tidak"
+                ],
+                answer: 0, // A
+                explanation: "Massa (kg) besarnya selalu tetap di mana pun, sedangkan Berat (W = m×g dalam Newton) nilainya berubah sesuai gravitasi tempat tersebut."
+            },
+            {
+                id: 20,
+                topic: "Menentukan Waktu Tempuh",
+                question: "Jarak kota A ke kota B adalah 120 km. Jika sebuah mobil melaju dengan kecepatan rata-rata 60 km/jam, berapa lama waktu yang dibutuhkan?",
+                illustration: null,
+                options: [
+                    "0,5 jam",
+                    "2 jam",
+                    "3 jam",
+                    "7.200 jam"
+                ],
+                answer: 1, // B
+                explanation: "Rumus waktu: t = s / v = 120 km / 60 km/jam = 2 jam."
+            },
+            {
+                id: 21,
+                topic: "GLBB Menghitung Jarak",
+                question: "Batu dilepaskan dari atas jembatan dan menyentuh air setelah 3 detik. Jika g = 10 m/s², berapa tinggi jembatan tersebut?",
+                illustration: null,
+                options: [
+                    "30 meter",
+                    "15 meter",
+                    "45 meter",
+                    "90 meter"
+                ],
+                answer: 2, // C
+                explanation: "Sesuai rumus h = ½ × g × t² = ½ × 10 × (3)² = 5 × 9 = 45 meter."
+            },
+            {
+                id: 22,
+                topic: "Gaya Berat di Bulan",
+                question: "Seorang astronot memiliki massa 60 kg di Bumi. Berapakah BERAT astronot tersebut saat berada di Bulan (gravitasi Bulan = 1,6 m/s²)?",
+                illustration: null,
+                options: [
+                    "60 Newton",
+                    "96 Newton",
+                    "600 Newton",
+                    "37,5 Newton"
+                ],
+                answer: 1, // B
+                explanation: "Berat di Bulan = massa × g_bulan = 60 kg × 1,6 m/s² = 96 Newton."
+            },
+            {
+                id: 23,
+                topic: "Percepatan dari Pasangan Gaya dan Massa",
+                question: "Gaya sebesar 12 N bekerja pada benda A bermassa 2 kg, sedangkan gaya 12 N juga bekerja pada benda B bermassa 4 kg. Pernyataan yang benar adalah...",
+                illustration: null,
+                options: [
+                    "Percepatan benda A lebih besar daripada percepatan benda B",
+                    "Percepatan benda B lebih besar daripada percepatan benda A",
+                    "Percepatan kedua benda sama besar",
+                    "Benda B akan bergerak lebih cepat dari benda A"
+                ],
+                answer: 0, // A
+                explanation: "Sesuai a = F / m: Untuk gaya yang sama, semakin kecil massa benda, maka percepatannya semakin besar (aA = 12/2 = 6 m/s², aB = 12/4 = 3 m/s²)."
+            },
+            {
+                id: 24,
+                topic: "Perbedaan Kelajuan dan Kecepatan",
+                question: "Pernyataan yang tepat tentang perbedaan antara KELAJUAN dan KECEPATAN adalah...",
+                illustration: null,
+                options: [
+                    "Kelajuan memiliki arah (vektor), kecepatan tidak memiliki arah (skalar)",
+                    "Kelajuan mengukur perpindahan, kecepatan mengukur jarak tempuh",
+                    "Kelajuan adalah besaran skalar (hanya nilai), sedangkan kecepatan adalah besaran vektor (memiliki nilai dan arah)",
+                    "Keduanya adalah besaran yang persis sama tanpa perbedaan"
+                ],
+                answer: 2, // C
+                explanation: "Kelajuan = Jarak / Waktu (skalar). Kecepatan = Perpindahan / Waktu (vektor yang memperhitungkan arah)."
+            },
+            {
+                id: 25,
+                topic: "Resultan Gaya Seimbang",
+                question: "Dua tim melakukan permainan tarik tambang. Tim Kiri menarik dengan gaya 300 N dan Tim Kanan menarik dengan gaya 300 N. Apa yang terjadi?",
+                illustration: null,
+                options: [
+                    "Tali bergerak ke arah kiri",
+                    "Tali bergerak ke arah kanan",
+                    "Resultan gaya nol dan tali tetap diam (seimbang)",
+                    "Tali terputus karena percepatan tinggi"
+                ],
+                answer: 2, // C
+                explanation: "R = 300 N - 300 N = 0 N. Karena resultan gaya sama dengan nol, sistem dalam keadaan seimbang (diam)."
+            },
+            {
+                id: 26,
+                topic: "Gaya Gesek yang Menguntungkan",
+                question: "Contoh gaya gesek yang bersifat MENGUNTUNGKAN dalam kehidupan sehari-hari adalah...",
+                illustration: null,
+                options: [
+                    "Gesekan antar komponen mesin yang menyebabkan keausan",
+                    "Gesekan udara pada badan mobil yang menghambat gerak",
+                    "Gesekan antara alur ban kendaraan dengan permukaan jalan agar tidak selip",
+                    "Gesekan antara air dan badan kapal laut"
+                ],
+                answer: 2, // C
+                explanation: "Alur pada ban diciptakan khusus untuk memperbesar gaya gesek sehingga kendaraan tidak mudah tergelincir/selip."
+            },
+            {
+                id: 27,
+                topic: "Penerapan Hukum III Newton",
+                question: "Manakah di antara peristiwa berikut yang BUKAN merupakan contoh penerapan Hukum III Newton (Aksi-Reaksi)?",
+                illustration: null,
+                options: [
+                    "Tangan terasa sakit saat memukul meja dengan keras",
+                    "Peluncuran roket menyemburkan gas ke bawah sehingga roket terdorong ke atas",
+                    "Kelereng terus menggelinding di atas lantai licin jika tidak diganggu",
+                    "Kepakan sayap burung ke bawah membuat burung terangkat ke atas"
+                ],
+                answer: 2, // C
+                explanation: "Kelereng yang terus menggelinding adalah contoh sifat kelembaman (Hukum I Newton), bukan aksi-reaksi."
+            },
+            {
+                id: 28,
+                topic: "Membaca Grafik s-t",
+                question: "Pada grafik posisi terhadap waktu (s-t) berikut, garis lurus miring ke atas menunjukkan bahwa benda bergerak secara...",
+                illustration: `<svg width="200" height="90" viewBox="0 0 200 90"><line x1="30" y1="75" x2="170" y2="75" stroke="#64748b" stroke-width="2"/><line x1="30" y1="75" x2="30" y2="15" stroke="#64748b" stroke-width="2"/><line x1="30" y1="75" x2="140" y2="25" stroke="#059669" stroke-width="3"/><text x="15" y="25" fill="#475569" font-size="10" font-weight="bold">s (m)</text><text x="175" y="80" fill="#475569" font-size="10" font-weight="bold">t (s)</text></svg>`,
+                options: [
+                    "Gerak Lurus Beraturan (Kecepatan Konstan)",
+                    "Gerak Lurus Berubah Beraturan dipercepat",
+                    "Benda dalam keadaan diam",
+                    "Gerak Melingkar"
+                ],
+                answer: 0, // A
+                explanation: "Pada grafik posisi-waktu (s-t), garis lurus miring menandakan perubahan posisi yang teratur terhadap waktu, yaitu GLB (kecepatan konstan)."
+            },
+            {
+                id: 29,
+                topic: "Kecepatan Rata-rata 2 Tahap",
+                question: "Andi bersepeda menempuh 60 meter dalam 10 detik pertama, lalu menempuh 40 meter berikutnya dalam 10 detik kedua. Kecepatan rata-rata Andi adalah...",
+                illustration: null,
+                options: [
+                    "10 m/s",
+                    "5 m/s",
+                    "6 m/s",
+                    "4 m/s"
+                ],
+                answer: 1, // B
+                explanation: "v_rata = Total Jarak / Total Waktu = (60 m + 40 m) / (10 s + 10 s) = 100 m / 20 s = 5 m/s."
+            },
+            {
+                id: 30,
+                topic: "Hukum II Newton & Percepatan",
+                question: "Jika gaya tarik pada sebuah benda dilipatgandakan menjadi 2 kali semula sementara massanya tetap, maka percepatan benda akan menjadi...",
+                illustration: null,
+                options: [
+                    "Setengah kali semula",
+                    "Tetap seperti semula",
+                    "2 kali semula",
+                    "4 kali semula"
+                ],
+                answer: 2, // C
+                explanation: "Berdasarkan a = F / m, percepatan (a) berbanding lurus dengan gaya (F). Jika F menjadi 2F, maka percepatan (a) juga menjadi 2 kali semula."
+            }
+        ];
+
+        // State Aplikasi
+        let currentQuestionIndex = 0;
+        let userAnswers = {}; // { questionId: selectedOptionIndex }
+
+        // Inisialisasi saat window dimuat
+        window.onload = function() {
+            loadSavedState();
+            renderQuestionGrid();
+            displayQuestion(currentQuestionIndex);
+            updateStats();
+        };
+
+        // Memuat simpanan data dari localStorage
+        function loadSavedState() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    userAnswers = parsed.userAnswers || {};
+                    currentQuestionIndex = parsed.currentIndex || 0;
+                }
+            } catch (e) {
+                console.error("Gagal membaca storage", e);
+                userAnswers = {};
+            }
+        }
+
+        // Menyimpan data ke localStorage
+        function saveState() {
+            try {
+                const payload = {
+                    userAnswers: userAnswers,
+                    currentIndex: currentQuestionIndex
+                };
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+            } catch (e) {
+                console.error("Gagal menyimpan progress", e);
+            }
+        }
+
+        // Render Tombol Grid Navigasi
+        function renderQuestionGrid() {
+            const gridContainer = document.getElementById('question-grid');
+            gridContainer.innerHTML = '';
+
+            questionsData.forEach((q, idx) => {
+                const btn = document.createElement('button');
+                btn.id = `grid-btn-${idx}`;
+                btn.className = `h-9 w-full rounded-lg font-semibold text-xs border transition flex items-center justify-center`;
+                btn.onclick = () => jumpToQuestion(idx);
+                btn.innerText = idx + 1;
+                gridContainer.appendChild(btn);
+            });
+            updateGridStyles();
+        }
+
+        // Update Tampilan Tombol Grid
+        function updateGridStyles() {
+            questionsData.forEach((q, idx) => {
+                const btn = document.getElementById(`grid-btn-${idx}`);
+                if (!btn) return;
+
+                const isAnswered = userAnswers.hasOwnProperty(q.id);
+                const isCurrent = idx === currentQuestionIndex;
+
+                let classes = "h-9 w-full rounded-xl font-semibold text-xs border transition flex items-center justify-center ";
+
+                if (isCurrent) {
+                    classes += "ring-2 ring-indigo-600 ring-offset-2 ring-offset-white ";
+                }
+
+                if (isAnswered) {
+                    const userAnswer = userAnswers[q.id];
+                    if (userAnswer === q.answer) {
+                        // Benar
+                        classes += "bg-emerald-600 text-white border-emerald-600 shadow-sm hover:bg-emerald-700";
+                    } else {
+                        // Salah
+                        classes += "bg-rose-600 text-white border-rose-600 shadow-sm hover:bg-rose-700";
+                    }
+                } else {
+                    // Belum diisi
+                    classes += "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 hover:border-slate-300";
+                }
+
+                btn.className = classes;
+            });
+        }
+
+        // Tampilkan Soal berdasarkan Index
+        function displayQuestion(index) {
+            currentQuestionIndex = index;
+            const q = questionsData[index];
+
+            // Header Soal
+            document.getElementById('question-number').innerText = `Soal No. ${index + 1} dari 30`;
+            document.getElementById('question-topic').innerText = `Topik: ${q.topic}`;
+            document.getElementById('question-text').innerText = q.question;
+
+            // Container Ilustrasi SVG
+            const illustContainer = document.getElementById('illustration-container');
+            if (q.illustration) {
+                illustContainer.classList.remove('hidden');
+                illustContainer.innerHTML = q.illustration;
+            } else {
+                illustContainer.classList.add('hidden');
+                illustContainer.innerHTML = '';
+            }
+
+            // Opsi Jawaban
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            const isAnswered = userAnswers.hasOwnProperty(q.id);
+            const selectedOpt = userAnswers[q.id];
+
+            const optionLabels = ['A', 'B', 'C', 'D'];
+
+            q.options.forEach((optText, optIdx) => {
+                const optionBtn = document.createElement('button');
+                optionBtn.disabled = isAnswered; // Kunci jika sudah dijawab
+
+                let btnStyle = "w-full text-left p-4 rounded-xl border text-sm font-medium transition flex items-center justify-between ";
+
+                if (!isAnswered) {
+                    btnStyle += "bg-white border-slate-200 text-slate-800 hover:bg-indigo-50/50 hover:border-indigo-300 cursor-pointer shadow-sm";
+                } else {
+                    // Sudah dijawab: Sorot jawaban benar dan jawaban user
+                    if (optIdx === q.answer) {
+                        btnStyle += "bg-emerald-50 border-emerald-500 text-emerald-900 font-semibold shadow-sm";
+                    } else if (optIdx === selectedOpt && selectedOpt !== q.answer) {
+                        btnStyle += "bg-rose-50 border-rose-500 text-rose-900 font-semibold shadow-sm";
+                    } else {
+                        btnStyle += "bg-slate-50 border-slate-200 text-slate-400 opacity-60";
+                    }
+                }
+
+                optionBtn.className = btnStyle;
+                optionBtn.onclick = () => handleSelectOption(q.id, optIdx);
+
+                // Konten Tombol
+                let badgeClass = "w-7 h-7 rounded-lg text-xs font-bold flex items-center justify-center mr-3 shrink-0 transition ";
+                if (!isAnswered) {
+                    badgeClass += "bg-slate-100 border border-slate-200 text-slate-600";
+                } else if (optIdx === q.answer) {
+                    badgeClass += "bg-emerald-600 text-white shadow-sm";
+                } else if (optIdx === selectedOpt && selectedOpt !== q.answer) {
+                    badgeClass += "bg-rose-600 text-white shadow-sm";
+                } else {
+                    badgeClass += "bg-slate-100 text-slate-400";
+                }
+
+                let iconStatus = '';
+                if (isAnswered) {
+                    if (optIdx === q.answer) {
+                        iconStatus = '<i class="fa-solid fa-circle-check text-emerald-600 text-xl ml-2"></i>';
+                    } else if (optIdx === selectedOpt) {
+                        iconStatus = '<i class="fa-solid fa-circle-xmark text-rose-600 text-xl ml-2"></i>';
+                    }
+                }
+
+                optionBtn.innerHTML = `
+                    <div class="flex items-center">
+                        <span class="${badgeClass}">${optionLabels[optIdx]}</span>
+                        <span class="text-slate-800">${optText}</span>
+                    </div>
+                    ${iconStatus}
+                `;
+
+                optionsContainer.appendChild(optionBtn);
+            });
+
+            // Feedback Box / Pembahasan
+            const feedbackBox = document.getElementById('feedback-box');
+            const feedbackStatus = document.getElementById('feedback-status');
+            const feedbackExp = document.getElementById('feedback-explanation');
+
+            if (isAnswered) {
+                feedbackBox.classList.remove('hidden');
+                if (selectedOpt === q.answer) {
+                    feedbackBox.className = "p-4 rounded-xl border mb-4 bg-emerald-50 border-emerald-300";
+                    feedbackStatus.className = "font-bold text-sm mb-1 text-emerald-800 flex items-center gap-2";
+                    feedbackStatus.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600"></i> JAWABAN BENAR!`;
+                } else {
+                    feedbackBox.className = "p-4 rounded-xl border mb-4 bg-rose-50 border-rose-300";
+                    feedbackStatus.className = "font-bold text-sm mb-1 text-rose-800 flex items-center gap-2";
+                    feedbackStatus.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-600"></i> JAWABAN SALAH! (Jawaban Benar: Opsi ${optionLabels[q.answer]})`;
+                }
+                feedbackExp.innerText = q.explanation;
+            } else {
+                feedbackBox.classList.add('hidden');
+            }
+
+            // Status Navigasi Tombol Prev/Next
+            document.getElementById('prev-btn').disabled = (index === 0);
+            
+            const nextBtn = document.getElementById('next-btn');
+            if (index === questionsData.length - 1) {
+                nextBtn.innerHTML = `Selesai <i class="fa-solid fa-check-double"></i>`;
+            } else {
+                nextBtn.innerHTML = `Berikutnya <i class="fa-solid fa-arrow-right"></i>`;
+            }
+
+            updateGridStyles();
+            saveState();
+        }
+
+        // Pilih Jawaban
+        function handleSelectOption(questionId, optionIndex) {
+            if (userAnswers.hasOwnProperty(questionId)) return; // Tidak dapat diubah jika sudah dijawab
+
+            userAnswers[questionId] = optionIndex;
+            displayQuestion(currentQuestionIndex);
+            updateStats();
+        }
+
+        // Berpindah Soal
+        function changeQuestion(direction) {
+            const newIndex = currentQuestionIndex + direction;
+            if (newIndex >= 0 && newIndex < questionsData.length) {
+                displayQuestion(newIndex);
+            }
+        }
+
+        // Melompat ke Soal Spesifik
+        function jumpToQuestion(index) {
+            displayQuestion(index);
+        }
+
+        // Update Statistik dan Skor
+        function updateStats() {
+            let correctCount = 0;
+            let wrongCount = 0;
+            const answeredCount = Object.keys(userAnswers).length;
+
+            questionsData.forEach(q => {
+                if (userAnswers.hasOwnProperty(q.id)) {
+                    if (userAnswers[q.id] === q.answer) {
+                        correctCount++;
+                    } else {
+                        wrongCount++;
+                    }
+                }
+            });
+
+            const emptyCount = questionsData.length - answeredCount;
+
+            document.getElementById('stat-correct').innerText = correctCount;
+            document.getElementById('stat-wrong').innerText = wrongCount;
+            document.getElementById('stat-empty').innerText = emptyCount;
+
+            document.getElementById('progress-text').innerText = `${answeredCount}/${questionsData.length} Terjawab`;
+
+            // Nilai Akhir (Skala 100)
+            const scoreValue = Math.round((correctCount / questionsData.length) * 100);
+            document.getElementById('score-display').innerText = `${scoreValue} / 100`;
+        }
+
+        // Fungsi Reset Modal
+        function confirmReset() {
+            document.getElementById('reset-modal').classList.remove('hidden');
+        }
+
+        function closeResetModal() {
+            document.getElementById('reset-modal').classList.add('hidden');
+        }
+
+        function executeReset() {
+            userAnswers = {};
+            localStorage.removeItem(STORAGE_KEY);
+            closeResetModal();
+            displayQuestion(0);
+            updateStats();
+            updateGridStyles();
+        }
+    </script>
+</body>
+</html>
